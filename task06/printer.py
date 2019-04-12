@@ -7,7 +7,9 @@ class PrettyPrinter(ASTNodeVisitor):
         self.offset = 0
 
     def get_result(self):
-        return self.result + ';'
+        if not self.result.endswith('}'):
+            self.result += ';'
+        return self.result
 
     def add_new_line(self):
         self.result += '\n'
@@ -27,7 +29,8 @@ class PrettyPrinter(ASTNodeVisitor):
         for stmt in block:
             self.add_new_line()
             stmt.accept(self)
-            self.result += ';'
+            if not self.result.endswith('}'):
+                self.result += ';'
         self.offset -= 1
         self.add_new_line()
 
@@ -49,9 +52,9 @@ class PrettyPrinter(ASTNodeVisitor):
             self.visit_block(conditional.if_false)
             self.result += '}'
 
-    def visit_print(self, print):
+    def visit_print(self, _print):
         self.result += 'print '
-        print.expr.accept(self)
+        _print.expr.accept(self)
 
     def visit_read(self, read):
         self.result += 'read ' + read.name
@@ -76,8 +79,9 @@ class PrettyPrinter(ASTNodeVisitor):
         self.result += ')'
 
     def visit_unary_operation(self, unary_operation):
-        self.result += unary_operation.op
+        self.result += '(' + unary_operation.op + '('
         unary_operation.expr.accept(self)
+        self.result += 2 * ')'
 
 
 def pretty_print(stmt):
