@@ -16,12 +16,12 @@ class ConstantFolder(ASTNodeVisitor):
 
     def visit_conditional(self, conditional):
         condition = conditional.condition.accept(self)
-        if_true = [stmt.accept(self) for stmt in conditional.if_true]
-        if_false = [stmt.accept(self) for stmt in conditional.if_false]
+        if_true = [stmt.accept(self) for stmt in conditional.if_true or []]
+        if_false = [stmt.accept(self) for stmt in conditional.if_false or []]
         return Conditional(condition, if_true, if_false)
 
-    def visit_print(self, print):
-        return Print(print.expr.accept(self))
+    def visit_print(self, _print):
+        return Print(_print.expr.accept(self))
 
     def visit_read(self, read):
         return read
@@ -42,10 +42,10 @@ class ConstantFolder(ASTNodeVisitor):
         if isinstance(lhs, Number) and isinstance(rhs, Number):
             return BinaryOperation(lhs, op, rhs).evaluate(None)
 
-        if lhs == Number(0) and isinstance(rhs, Reference):
+        if lhs == Number(0) and isinstance(rhs, Reference) and op == '*':
             return Number(0)
 
-        if isinstance(lhs, Reference) and rhs == Number(0):
+        if isinstance(lhs, Reference) and rhs == Number(0) and op == '*':
             return Number(0)
 
         if isinstance(lhs, Reference) and lhs == rhs and op == '-':
