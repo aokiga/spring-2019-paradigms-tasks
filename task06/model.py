@@ -54,7 +54,7 @@ class ASTNodeVisitor(metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def visit_print(self, print):
+    def visit_print(self, _print):
         pass
 
     @abc.abstractmethod
@@ -205,9 +205,9 @@ class Conditional(ASTNode):
     def __eq__(self, other):
         if not isinstance(other, Conditional):
             return False
-        return self.condition == other.condition and\
-            self.if_true == other.if_true and\
-            self.if_false == other.if_false
+        return (self.condition == other.condition and
+                self.if_true == other.if_true and
+                self.if_false == other.if_false)
 
 
 class Print(ASTNode):
