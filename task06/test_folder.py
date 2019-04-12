@@ -3,7 +3,6 @@ import pytest
 
 from model import *
 from folder import fold_constants
-from test_printer import pretty_print
 
 
 def test_bin_op_two_num():
@@ -84,7 +83,7 @@ def test_bin_op_nonfoldable_different():
 
 
 def test_end_to_end():
-    assert pretty_print(fold_constants(
+    assert fold_constants(
         BinaryOperation(
             Number(10),
             '-',
@@ -101,7 +100,7 @@ def test_end_to_end():
                 )
             )
         )
-    )) == '13;'
+    ) == Number(13)
 
 
 if __name__ == '__main__':
