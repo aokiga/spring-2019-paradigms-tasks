@@ -24,7 +24,7 @@ def test_un_op_num():
     ) == Number(-2)
 
 
-def test_bin_op_right_is_zero():
+def test_multiply_by_zero_right():
     assert fold_constants(
         BinaryOperation(
             Reference('x'),
@@ -34,7 +34,7 @@ def test_bin_op_right_is_zero():
     ) == Number(0)
 
 
-def test_bin_op_right_is_zero():
+def test_multiply_by_zero_left():
     assert fold_constants(
         BinaryOperation(
             Number(0),
@@ -44,7 +44,7 @@ def test_bin_op_right_is_zero():
     ) == Number(0)
 
 
-def test_bin_op_ref_minus_ref():
+def test_subtract_same_refs():
     assert fold_constants(
         BinaryOperation(
             Reference('x'),
@@ -54,7 +54,7 @@ def test_bin_op_ref_minus_ref():
     ) == Number(0)
 
 
-def test_bin_op_nonfoldable_without_minus():
+def test_nonfoldable_add_same_refs():
     assert fold_constants(
         BinaryOperation(
             Reference('x'),
@@ -68,7 +68,7 @@ def test_bin_op_nonfoldable_without_minus():
     )
 
 
-def test_bin_op_nonfoldable_different():
+def test_nonfoldable_subtract_diff_refs():
     assert fold_constants(
         BinaryOperation(
             Reference('x'),
