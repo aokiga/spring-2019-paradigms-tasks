@@ -398,9 +398,9 @@ class BinaryOperation(ASTNode):
     def __eq__(self, other):
         if not isinstance(other, BinaryOperation):
             return False
-        return self.lhs == other.lhs and\
-            self.op == other.op and\
-            self.rhs == other.rhs
+        return (self.lhs == other.lhs and
+                self.op == other.op and
+                self.rhs == other.rhs)
 
 
 class UnaryOperation(ASTNode):
