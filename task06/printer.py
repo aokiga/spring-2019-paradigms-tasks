@@ -6,11 +6,6 @@ class PrettyPrinter(ASTNodeVisitor):
         self.result = ''
         self.offset = 0
 
-    def get_result(self):
-        if not self.result.endswith('}'):
-            self.result += ';'
-        return self.result
-
     def add_new_line(self):
         self.result += '\n'
         self.result += '    ' * self.offset
@@ -19,38 +14,33 @@ class PrettyPrinter(ASTNodeVisitor):
         self.result += str(number.value)
 
     def visit_function(self, function):
-        pass
+        raise TypeError("PrettyPrinter must not visit Function object")
 
     def visit_block(self, block):
-        if not block:
-            self.add_new_line()
-            return
+        self.result += '{'
         self.offset += 1
-        for stmt in block:
+        for stmt in block or []:
             self.add_new_line()
             stmt.accept(self)
             if not self.result.endswith('}'):
                 self.result += ';'
         self.offset -= 1
         self.add_new_line()
+        self.result += '}'
 
     def visit_function_definition(self, function_definition):
         self.result += 'def ' + function_definition.name + '('
-        self.result += ', '.join(function_definition.function.args)
-        self.result += ') {'
+        self.result += ', '.join(function_definition.function.args) + ') '
         self.visit_block(function_definition.function.body)
-        self.result += '}'
 
     def visit_conditional(self, conditional):
         self.result += 'if ('
         conditional.condition.accept(self)
-        self.result += ') {'
+        self.result += ') '
         self.visit_block(conditional.if_true)
-        self.result += '}'
         if conditional.if_false:
-            self.result += ' else {'
+            self.result += ' else '
             self.visit_block(conditional.if_false)
-            self.result += '}'
 
     def visit_print(self, _print):
         self.result += 'print '
@@ -63,7 +53,7 @@ class PrettyPrinter(ASTNodeVisitor):
         function_call.fun_expr.accept(self)
         self.result += '('
         for i, arg in enumerate(function_call.args):
-            if (i):
+            if i:
                 self.result += ', '
             arg.accept(self)
         self.result += ')'
@@ -87,4 +77,7 @@ class PrettyPrinter(ASTNodeVisitor):
 def pretty_print(stmt):
     printer = PrettyPrinter()
     stmt.accept(printer)
-    print(printer.get_result())
+    result = printer.result
+    if not result.endswith('}'):
+        result += ';'
+    print(result)
