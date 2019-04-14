@@ -14,7 +14,7 @@ class PrettyPrinter(ASTNodeVisitor):
         self.result += str(number.value)
 
     def visit_function(self, function):
-        raise TypeError("PrettyPrinter must not visit Function object")
+        raise TypeError('PrettyPrinter must not visit Function object')
 
     def visit_block(self, block):
         self.result += '{'
@@ -71,7 +71,7 @@ class PrettyPrinter(ASTNodeVisitor):
     def visit_unary_operation(self, unary_operation):
         self.result += '(' + unary_operation.op + '('
         unary_operation.expr.accept(self)
-        self.result += 2 * ')'
+        self.result += '))'
 
 
 def pretty_print(stmt):
