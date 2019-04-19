@@ -12,7 +12,7 @@ extern crate threadpool;
 // Чтобы не писать `field::Cell:Empty`, можно "заимпортировать" нужные вещи из модуля.
 use field::Cell::*;
 use field::{parse_field, Field, N};
-use std::sync::mpsc::channel;
+use std::sync::mpsc::{channel, Sender};
 use threadpool::ThreadPool;
 
 /// Эта функция выполняет один шаг перебора в поисках решения головоломки.
@@ -168,6 +168,40 @@ fn find_solution(f: &mut Field) -> Option<Field> {
     try_extend_field(f, |f_solved| f_solved.clone(), find_solution)
 }
 
+const SPAWN_DEPTH: usize = 2;
+
+fn spawn_tasks(f: &mut Field, sender: &Sender<Option<Field>>, pool: &ThreadPool, depth: usize) {
+    if depth == SPAWN_DEPTH {
+        try_extend_field(
+            f,
+            |f| {
+                sender.send(Some(f.clone())).unwrap_or(());
+                f.clone()
+            },
+            |f| {
+                let sender = sender.clone();
+                let mut f = f.clone();
+                pool.execute(move || {
+                    sender.send(find_solution(&mut f)).unwrap_or(());
+                });
+                None
+            },
+        );
+    } else {
+        try_extend_field(
+            f,
+            |f| {
+                sender.send(Some(f.clone())).unwrap_or(());
+                f.clone()
+            },
+            |f| {
+                spawn_tasks(f, sender, pool, depth + 1);
+                None
+            },
+        );
+    }
+}
+
 /// Перебирает все возможные решения головоломки, заданной параметром `f`, в несколько потоков.
 /// Если хотя бы одно решение `s` существует, возвращает `Some(s)`,
 /// в противном случае возвращает `None`.
@@ -175,21 +209,7 @@ fn find_solution_parallel(mut f: Field) -> Option<Field> {
     let n_threads = 8;
     let (sender, receiver) = channel();
     let pool = ThreadPool::new(n_threads);
-    try_extend_field(
-        &mut f,
-        |f| {
-            sender.send(Some(f.clone())).unwrap_or(());
-            f.clone()
-        },
-        |f| {
-            let sender = sender.clone();
-            let mut f = f.clone();
-            pool.execute(move || {
-                sender.send(find_solution(&mut f)).unwrap_or(());
-            });
-            None
-        }
-    );
+    spawn_tasks(&mut f, &sender, &pool, 1);
     std::mem::drop(sender);
     receiver.into_iter().find_map(|x| x)
 }
