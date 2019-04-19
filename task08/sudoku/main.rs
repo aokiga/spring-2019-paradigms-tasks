@@ -171,34 +171,25 @@ fn find_solution(f: &mut Field) -> Option<Field> {
 const SPAWN_DEPTH: usize = 2;
 
 fn spawn_tasks(f: &mut Field, sender: &Sender<Option<Field>>, pool: &ThreadPool, depth: usize) {
+    let solved_cb = |f: &mut Field| {
+        sender.send(Some(f.clone())).unwrap_or(());
+        f.clone()
+    };
+
     if depth == SPAWN_DEPTH {
-        try_extend_field(
-            f,
-            |f| {
-                sender.send(Some(f.clone())).unwrap_or(());
-                f.clone()
-            },
-            |f| {
-                let sender = sender.clone();
-                let mut f = f.clone();
-                pool.execute(move || {
-                    sender.send(find_solution(&mut f)).unwrap_or(());
-                });
-                None
-            },
-        );
+        try_extend_field(f, solved_cb, |f| {
+            let sender = sender.clone();
+            let mut f = f.clone();
+            pool.execute(move || {
+                sender.send(find_solution(&mut f)).unwrap_or(());
+            });
+            None
+        });
     } else {
-        try_extend_field(
-            f,
-            |f| {
-                sender.send(Some(f.clone())).unwrap_or(());
-                f.clone()
-            },
-            |f| {
-                spawn_tasks(f, sender, pool, depth + 1);
-                None
-            },
-        );
+        try_extend_field(f, solved_cb, |f| {
+            spawn_tasks(f, sender, pool, depth + 1);
+            None
+        });
     }
 }
 
