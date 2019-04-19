@@ -12,7 +12,7 @@ extern crate threadpool;
 // Чтобы не писать `field::Cell:Empty`, можно "заимпортировать" нужные вещи из модуля.
 use field::Cell::*;
 use field::{parse_field, Field, N};
-use std::sync::mpsc;
+use std::sync::mpsc::channel;
 use threadpool::ThreadPool;
 
 /// Эта функция выполняет один шаг перебора в поисках решения головоломки.
@@ -173,13 +173,25 @@ fn find_solution(f: &mut Field) -> Option<Field> {
 /// в противном случае возвращает `None`.
 fn find_solution_parallel(mut f: Field) -> Option<Field> {
     let n_threads = 8;
-    let (sender, receiver) = mpsc::channel();
+    let (sender, receiver) = channel();
     let pool = ThreadPool::new(n_threads);
-    pool.execute(move || {
-        sender.send(find_solution(&mut f)).unwrap();
-    });
-    let result = receiver.recv().unwrap();
-    return result;
+    try_extend_field(
+        &mut f,
+        |f| {
+            sender.send(Some(f.clone())).unwrap_or(());
+            f.clone()
+        },
+        |f| {
+            let sender = sender.clone();
+            let mut f = f.clone();
+            pool.execute(move || {
+                sender.send(find_solution(&mut f)).unwrap_or(());
+            });
+            None
+        }
+    );
+    std::mem::drop(sender);
+    receiver.into_iter().find_map(|x| x)
 }
 
 /// Юнит-тест, проверяющий, что `find_solution()` находит лексикографически минимальное решение на пустом поле.
