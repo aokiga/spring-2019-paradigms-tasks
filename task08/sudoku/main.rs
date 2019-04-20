@@ -198,9 +198,9 @@ fn spawn_tasks(f: &mut Field, sender: &Sender<Option<Field>>, pool: &ThreadPool,
 /// Если хотя бы одно решение `s` существует, возвращает `Some(s)`,
 /// в противном случае возвращает `None`.
 fn find_solution_parallel(mut f: Field) -> Option<Field> {
-    let n_threads = 8;
+    const N_THREADS: usize = 8;
     let (sender, receiver) = channel();
-    let pool = ThreadPool::new(n_threads);
+    let pool = ThreadPool::new(N_THREADS);
     spawn_tasks(&mut f, &sender, &pool, 0);
     std::mem::drop(sender);
     receiver.into_iter().find_map(|x| x)
