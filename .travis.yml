@@ -8,7 +8,7 @@ cache:
 install:
 - sudo add-apt-repository ppa:deadsnakes/ppa -y # python3.7 is unavailable in Xenial
 - sudo apt-get update
-- sudo apt-get install python3.7
+- sudo apt-get install python3.7 valgrind clang-format
 - virtualenv --python=python3.7 .py37
 - source .py37/bin/activate
 - python --version
@@ -28,4 +28,9 @@ script:
 - cargo build --verbose
 - cargo test --verbose
 - ./target/debug/sudoku < ../tests/03-medium.in
+- popd
+- pushd task09/
+- diff -u <(cat src/*) <(clang-format -style=file src/*)
+- cmake . && make
+- valgrind --tool=memcheck --leak-check=full ./queue_test
 - popd
