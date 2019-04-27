@@ -58,7 +58,8 @@ TEST_CASE("ThreadsafeQueue multithreaded ping-pong") {
         for (int i = 0; i < PING_PONGS; ++i) {
             int *cur =
                 static_cast<int *>(threadsafe_queue_wait_and_pop(&qs[0]));
-            threadsafe_queue_push(&qs[1], ++(*cur));
+            ++(*cur);
+            threadsafe_queue_push(&qs[1], cur);
         }
         return nullptr;
     };
