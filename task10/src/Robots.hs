@@ -57,7 +57,7 @@ printRobot (myName, myAttack, myHealth) = myName ++ ", attack: " ++ show myAttac
 -- Напишем функцию damage которая причиняет роботу урон
 damage :: Robot -> Int -> Robot
 damage victim amount = let
-        health    = getHealth victim
+        health = getHealth victim
         newHealth = health - amount
     in setHealth newHealth victim
 
@@ -88,17 +88,20 @@ fight attacker defender | isAlive attacker = damage defender (getAttack attacker
 -- Победитель определеяется как робот, у которого уровень здоровья строго больше, чем у сопереника
 -- Если же так вышло, что после трех раундов у обоих роботов одинаковый уровень жизни, то
 -- победителем считается тот, кто ударял первым(то есть атакующий робот)
-nRoundFight :: Int -> Robot -> Robot -> Robot
-nRoundFight 0 attacker defender | getHealth attacker > getHealth defender = attacker
-                                | otherwise                               = defender
-nRoundFight n attacker defender = nRoundFight (n - 1)  attacker' defender'
+nRoundFight :: Int -> Robot -> Robot -> (Robot, Robot)
+nRoundFight 0 attacker defender = (attacker, defender)
+nRoundFight n attacker defender = (attacker'', defender'') 
     where
-        attacker' = fight attacker defender
-        defender' = attacker
+        attacker'                = fight attacker defender
+        defender'                = attacker
+        (defender'', attacker'') = nRoundFight (n - 1) attacker' defender'
 
+chooseWinner :: (Robot, Robot) -> Robot
+chooseWinner (attacker, defender) | getHealth attacker >= getHealth defender = attacker
+                                  | otherwise                                = defender
 
 threeRoundFight :: Robot -> Robot -> Robot
-threeRoundFight = nRoundFight 3 
+threeRoundFight attacker defender = chooseWinner $ nRoundFight 3 attacker defender
 
 -- Шаг 4.
 -- Создайте список из трех роботов(Абсолютно любых, но лучше живых, мы собираемся их побить)

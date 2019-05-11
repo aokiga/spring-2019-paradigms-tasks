@@ -37,17 +37,17 @@ testsRobots = let
         , testCase "Test for damage" $
             damage robocop 50 @?= robot "RoboCop" 20 60
 
-        , testCase "Test for isAlive" $
+        , testCase "Test for isAlive with an alive robot" $
             isAlive robocop @?= True
 
-        , testCase "Test for isAlive with dead" $
+        , testCase "Test for isAlive with a dead robot" $
             isAlive skeleton @?= False
 
         , testCase "Test for fight" $
             fight warrior robocop @?= robot "RoboCop" 20 60
 
         , testCase "Test for nRoundFight" $
-            nRoundFight 6 robocop warrior @?= robot "RoboCop" 20 10
+            nRoundFight 6 robocop warrior @?= (robot "RoboCop" 20 10, robot "warrior" 50 (-10))
 
         , testCase "Test for threeRoundFight" $
             threeRoundFight robocop warrior @?= robot "RoboCop" 20 60
