@@ -57,7 +57,7 @@ printRobot (myName, myAttack, myHealth) = myName ++ ", attack: " ++ show myAttac
 -- Напишем функцию damage которая причиняет роботу урон
 damage :: Robot -> Int -> Robot
 damage victim amount = let
-        health = getHealth victim
+        health    = getHealth victim
         newHealth = health - amount
     in setHealth newHealth victim
 
@@ -77,7 +77,7 @@ isAlive x = getHealth x > 0
 -- вернуть второго робота, как будто ничего и не было
 fight :: Robot -> Robot -> Robot
 fight attacker defender | isAlive attacker = damage defender (getAttack attacker)
-                        | otherwise          = defender
+                        | otherwise        = defender
 
 -- Наконец, напишите функцию, которая бы моделировала три раунда схватки между
 -- двумя роботами и возвращала бы победителя. Схватка происходит следующим образом:
@@ -90,7 +90,7 @@ fight attacker defender | isAlive attacker = damage defender (getAttack attacker
 -- победителем считается тот, кто ударял первым(то есть атакующий робот)
 nRoundFight :: Int -> Robot -> Robot -> Robot
 nRoundFight 0 attacker defender | getHealth attacker > getHealth defender = attacker
-                                | otherwise                                = defender
+                                | otherwise                               = defender
 nRoundFight n attacker defender = nRoundFight (n - 1)  attacker' defender'
     where
         attacker' = fight attacker defender
