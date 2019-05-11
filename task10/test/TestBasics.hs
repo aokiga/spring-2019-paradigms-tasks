@@ -20,9 +20,6 @@ testsBasics = testGroup "Unit tests for Basics tasks"
     , testCase "take' takes 1 element from 3-element list" $
         take' 1 [1,2,3] @?= [1]
 
-    , testCase "take' takes all elements from 4-element list" $
-        take' 12 [1..4] @?= [1..4]
-
     , testCase "take' takes 3 elements from infinite list" $
         take' 3 [1..] @?= [1,2,3]
 
@@ -47,14 +44,20 @@ testsBasics = testGroup "Unit tests for Basics tasks"
     , testCase "foldl'' can be used with empty list" $
         foldl'' (*) 4 [] @?= 4
 
+    , testCase "foldl'' can be used with asymmetric operation" $
+        foldl'' (\x y -> x * x + y) 0 [1, 2, 3] @?= 12
+
     , testCase "concat' works on finite lists as expected" $
         concat' [1,2,3] [4,5,6] @?= [1..6]
 
     , testCase "concat' works on empty lists as expected" $
         concat' [] [4,5,6] @?= [4..6]
 
-    , testCase "concat' works on infinite lists as expected" $
-        take 100 (concat' [1..3] [4..]) @?= take 100 [1..]
+    , testCase "concat' works on one infinite list as expected" $
+        take 100 (concat' [1..3] [4..]) @?= [1..100]
+
+     , testCase "concat' works on two infinite lists as expected" $
+        take 100 (concat' [1..] [4..]) @?= [1..100]
 
     , testCase "quickSort actualy sorts the list" $
         quickSort' [5,2,3,4,1] @?= [1..5]
