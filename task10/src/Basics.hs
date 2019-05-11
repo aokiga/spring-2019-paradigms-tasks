@@ -30,7 +30,7 @@ drop' n (_:xs) = drop' (n - 1) xs
 
 -- 5. filter' возвращает список из элементов, для которых f возвращает True
 filter' :: (a -> Bool) -> [a] -> [a]
-filter' _ []      = []
+filter' _ []     = []
 filter' f (x:xs) | f x       = x : filter' f xs
                  | otherwise = filter' f xs
 
@@ -45,7 +45,7 @@ foldl'' f z (x:xs) = foldl'' f (f z x) xs
 -- 7. concat' принимает на вход два списка и возвращает их конкатенацию
 -- concat' [1,2] [3] == [1,2,3]
 concat' :: [a] -> [a] -> [a]
-concat' [] ys    = ys
+concat' [] ys     = ys
 concat' (x:xs) ys = x : concat' xs ys
 
 -- 8. quickSort' возвращает его отсортированный список
