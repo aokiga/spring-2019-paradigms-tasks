@@ -17,22 +17,22 @@ testsRobots = let
             getName walter @?= "Walter"
         
         , testCase "Test for getAttack" $
-            getAttack robocop @?= 20
+            getAttack walter @?= 50
         
         , testCase "Test for getHealth" $
-            getHealth robocop @?= 110
+            getHealth walter @?= 50
         
         , testCase "Test for printRobot" $
             printRobot walter @?= "Walter, attack: 50, health: 50"
         
         , testCase "Test for setName" $
-            getName (setName "test" robocop) @?= "test"
+            setName "test" robocop @?= robot "test" 20 110
         
         , testCase "Test for setAttack" $
-            getAttack (setAttack 1000 robocop) @?= 1000
+            setAttack 1000 robocop @?= robot "RoboCop" 1000 110
         
         , testCase "Test for setHealth" $
-            getHealth (setHealth 0 robocop) @?= 0
+            setHealth 0 robocop @?= robot "RoboCop" 20 0
 
         , testCase "Test for damage" $
             damage robocop 50 @?= robot "RoboCop" 20 60
@@ -42,9 +42,6 @@ testsRobots = let
 
         , testCase "Test for isAlive with dead" $
             isAlive skeleton @?= False
-
-        , testCase "Test for isAlive" $
-            isAlive robocop @?= True
 
         , testCase "Test for fight" $
             fight warrior robocop @?= robot "RoboCop" 20 60

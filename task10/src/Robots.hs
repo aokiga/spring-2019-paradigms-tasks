@@ -89,7 +89,7 @@ fight attacker defender | isAlive attacker = damage defender (getAttack attacker
 -- Если же так вышло, что после трех раундов у обоих роботов одинаковый уровень жизни, то
 -- победителем считается тот, кто ударял первым(то есть атакующий робот)
 nRoundFight :: Int -> Robot -> Robot -> Robot
-nRoundFight 0 attacker defender | getHealth attacker >= getHealth defender = attacker
+nRoundFight 0 attacker defender | getHealth attacker > getHealth defender = attacker
                                 | otherwise                                = defender
 nRoundFight n attacker defender = nRoundFight (n - 1)  attacker' defender'
     where
