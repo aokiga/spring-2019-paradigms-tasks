@@ -1,4 +1,5 @@
 module Robots where
+import Data.Tuple(swap)
 
 -- Во второй части этого домашнего задания вам предстоит промоделировать битвы роботов
 -- Цель этой части показать, как моделировать концепции из объектно-ориентированного
@@ -90,18 +91,17 @@ fight attacker defender | isAlive attacker = damage defender (getAttack attacker
 -- победителем считается тот, кто ударял первым(то есть атакующий робот)
 nRoundFight :: Int -> Robot -> Robot -> (Robot, Robot)
 nRoundFight 0 attacker defender = (attacker, defender)
-nRoundFight n attacker defender = (attacker'', defender'') 
+nRoundFight n attacker defender = swap $ nRoundFight (n - 1) attacker' defender'
     where
-        attacker'                = fight attacker defender
-        defender'                = attacker
-        (defender'', attacker'') = nRoundFight (n - 1) attacker' defender'
+        attacker' = fight attacker defender
+        defender' = attacker
 
-chooseWinner :: (Robot, Robot) -> Robot
-chooseWinner (attacker, defender) | getHealth attacker >= getHealth defender = attacker
-                                  | otherwise                                = defender
+getWinner :: (Robot, Robot) -> Robot
+getWinner (attacker, defender) | getHealth attacker >= getHealth defender = attacker
+                               | otherwise                                = defender
 
 threeRoundFight :: Robot -> Robot -> Robot
-threeRoundFight attacker defender = chooseWinner $ nRoundFight 3 attacker defender
+threeRoundFight attacker defender = getWinner $ nRoundFight 3 attacker defender
 
 -- Шаг 4.
 -- Создайте список из трех роботов(Абсолютно любых, но лучше живых, мы собираемся их побить)

@@ -18,7 +18,7 @@ testsBasics = testGroup "Unit tests for Basics tasks"
         tail' [1,2,3] @?= [2,3]
 
     , testCase "tail' works on infinite list too" $
-        take 100 (tail' [1..]) @?= [2..101]
+        take 100 (tail' [1..]) @?= take 100 [2..]
 
     , testCase "take' takes 1 element from 3-element list" $
         take' 1 [1,2,3] @?= [1]
@@ -57,13 +57,13 @@ testsBasics = testGroup "Unit tests for Basics tasks"
         concat' [] [4,5,6] @?= [4..6]
 
     , testCase "concat' works with right infinite list as expected" $
-        take 100 (concat' [1..3] [4..]) @?= [1..100]
+        take 100 (concat' [1..3] [4..]) @?= take 100 [1..]
 
     , testCase "concat' works with left infinite list as expected" $
-        take 100 (concat' [1..] [4..5]) @?= [1..100]
+        take 100 (concat' [1..] [4..5]) @?= take 100 [1..]
 
     , testCase "concat' works on two infinite lists as expected" $
-        take 100 (concat' [1..] [4..]) @?= [1..100]
+        take 100 (concat' [1..] [4..]) @?= take 100 [1..]
 
     , testCase "quickSort actualy sorts the list" $
         quickSort' [5,2,3,4,1] @?= [1..5]
