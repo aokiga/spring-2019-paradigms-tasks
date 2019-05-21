@@ -144,7 +144,7 @@ mapTests name (_ :: Proxy m) =
             ,
             testCase "delete the key" $
                 let map  = Map.singleton 1 1 :: m Int Int in
-                let map' = Map.update (\x -> Nothing) 1 map in
+                let map' = Map.update (const Nothing) 1 map in
                 Map.null map' @?= True
         ],
 
@@ -179,7 +179,7 @@ mapTests name (_ :: Proxy m) =
             ,
             testCase "delete the key" $
                 let map  = Map.singleton 1 1 :: m Int Int in
-                let map' = Map.alter (const $ Nothing) 1 map in
+                let map' = Map.alter (const Nothing) 1 map in
                 Map.null map' @?= True
         ],
 

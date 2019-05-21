@@ -66,10 +66,10 @@ class Map t where
     lookup :: Ord k => k -> t k a -> Maybe a
 
     member :: Ord k => k -> t k a -> Bool
-    member key = isJust . (Map.lookup key)
+    member key = isJust . Map.lookup key
 
     notMember :: Ord k => k -> t k a -> Bool
-    notMember key = not . (member key)
+    notMember key = not . member key
 
     null :: t k a -> Bool
     null = (== 0) . size
