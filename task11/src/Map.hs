@@ -3,6 +3,8 @@
 -}
 module Map where
 
+import Data.Maybe (isJust, maybe)
+
 {-|
   Поведение всех определённых здесь функций должно быть аналогично
   поведению функций из модуля "Data.Map.Strict".
@@ -31,45 +33,45 @@ class Map t where
     singleton :: k -> a -> t k a
 
     fromList :: Ord k => [(k, a)] -> t k a
-    fromList = undefined {- insert -}
+    fromList = foldl (flip $ uncurry insert) empty
 
     toAscList :: t k a -> [(k, a)]
 
     insert :: Ord k => k -> a -> t k a -> t k a
-    insert = undefined {- insertWith -}
+    insert = insertWith const
 
     insertWith :: Ord k => (a -> a -> a) -> k -> a -> t k a -> t k a
-    insertWith = undefined {- alter -}
+    insertWith f key a = alter (Just . maybe a (f a)) key
 
     insertWithKey :: Ord k => (k -> a -> a -> a) -> k -> a -> t k a -> t k a
-    insertWithKey = undefined {- insertWith -}
+    insertWithKey f key = insertWith (f key) key
 
     delete :: Ord k => k -> t k a -> t k a
-    delete = undefined {- alter -}
+    delete = alter $ const Nothing
 
     adjust :: Ord k => (a -> a) -> k -> t k a -> t k a
-    adjust = undefined {- alter -}
+    adjust = alter . fmap
 
     adjustWithKey :: Ord k => (k -> a -> a) -> k -> t k a -> t k a
-    adjustWithKey = undefined {- adjust -}
+    adjustWithKey f key = adjust (f key) key
 
     update :: Ord k => (a -> Maybe a) -> k -> t k a -> t k a
-    update = undefined {- alter -}
+    update = alter . maybe Nothing
 
     updateWithKey :: Ord k => (k -> a -> Maybe a) -> k -> t k a -> t k a
-    updateWithKey = undefined {- update -}
+    updateWithKey f key = update (f key) key
 
     alter :: Ord k => (Maybe a -> Maybe a) -> k -> t k a -> t k a
 
     lookup :: Ord k => k -> t k a -> Maybe a
 
     member :: Ord k => k -> t k a -> Bool
-    member = undefined {- lookup -}
+    member key = isJust . (Map.lookup key)
 
     notMember :: Ord k => k -> t k a -> Bool
-    notMember = undefined {- member -}
+    notMember key = not . (member key)
 
     null :: t k a -> Bool
-    null = undefined {- size -}
+    null = (== 0) . size
 
     size :: t k a -> Int
