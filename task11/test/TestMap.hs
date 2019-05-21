@@ -30,7 +30,7 @@ mapTests name (_ :: Proxy m) =
         testGroup "empty" [
             testCase "empty map" $ 
                 let map = Map.empty :: m Int Int in
-                Map.null map @?= True
+                Map.size map @?= 0
         ],
 
         testGroup "singleton" [
@@ -211,6 +211,16 @@ mapTests name (_ :: Proxy m) =
             testCase "key doesn't exist" $
                 let map = Map.singleton 1 2 :: m Int Int in
                 Map.notMember 2 map @?= True
+        ],
+
+        testGroup "null" [
+            testCase "empty map" $
+                let map = Map.empty :: m Int Int in
+                Map.null map @?= True
+            ,
+            testCase "non-empty map" $
+                let map = Map.singleton 1 1 :: m Int Int in
+                Map.null map @?= False
         ]
     ]
 
